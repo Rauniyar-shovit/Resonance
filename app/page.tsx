@@ -1,7 +1,5 @@
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 
-import React from "react";
-
 const Home = () => {
   return (
     <div className="flex min-h-screen items-center flex-col justify-center gap-4 bg-background">
