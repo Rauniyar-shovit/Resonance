@@ -41,7 +41,7 @@ model Voice {
   category VoiceCategory @default(GENERAL)
   language String @default("en-US")
   variant VoiceVariant 
-  r20bjectKey String
+  r2ObjectKey String
   orgId String?
 
   generations Generation[]
