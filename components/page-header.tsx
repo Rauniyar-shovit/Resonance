@@ -24,14 +24,20 @@ const PageHeader = ({
       </div>
       <div className="flex items-center gap-3">
         <Button variant="outline" size="sm">
-          <Link href="mailto:test@test.com">
+          <Link
+            href="mailto:test@test.com"
+            className="flex items-center justify-center gap-2 "
+          >
             <ThumbsUp />
             <span className="hidden lg:block">Feedback</span>
           </Link>
         </Button>
 
         <Button variant="outline" size="sm">
-          <Link href="mailto:test@test.com">
+          <Link
+            href="mailto:test@test.com"
+            className="flex items-center justify-center gap-2 "
+          >
             <Headphones />
             <span className="hidden lg:block">Need Help?</span>
           </Link>
