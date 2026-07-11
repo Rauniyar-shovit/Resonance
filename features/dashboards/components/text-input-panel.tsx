@@ -3,7 +3,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { TEXT_MAX_LENGTH } from "@/features/text-to-speech/data/constants";
+import {
+  COST_PER_UNIT,
+  TEXT_MAX_LENGTH,
+} from "@/features/text-to-speech/data/constants";
 import { Coins } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -40,7 +43,7 @@ export const TextInputPanel = () => {
                 {text.length === 0 ? (
                   "Start typing to estimate"
                 ) : (
-                  <>${(text.length * 0.0003).toFixed(4)} estimated</>
+                  <>${(text.length * COST_PER_UNIT).toFixed(4)} estimated</>
                 )}
               </span>
             </Badge>

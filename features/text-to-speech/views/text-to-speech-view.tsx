@@ -1,13 +1,23 @@
-import React from "react";
+"use client";
 import { TextInputPanel } from "../components/text-input-panel";
+import { VoicePreviewPlaceholder } from "../components/voice-preview-placeholder";
+import { SettingsPanel } from "../components/settings-panel";
+import {
+  defaultTTSValues,
+  TextToSpeechForm,
+} from "../components/text-to-speech-form";
 
 const TextToSpeechView = () => {
   return (
-    <div className="flex min-h-0 flex-1 overflow-hidden">
-      <div className="flex min-h-0 flex-1 flex-col">
-        <TextInputPanel />
+    <TextToSpeechForm defaultValues={defaultTTSValues}>
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <TextInputPanel />
+          <VoicePreviewPlaceholder />
+        </div>
+        <SettingsPanel />
       </div>
-    </div>
+    </TextToSpeechForm>
   );
 };
 
