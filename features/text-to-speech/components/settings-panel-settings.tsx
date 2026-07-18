@@ -6,6 +6,7 @@ import { useTypedAppFormContext } from "@/hooks/use-app-form";
 import { useSelector } from "@tanstack/react-form";
 import { sliders } from "../data/sliders";
 import { ttsFormOptions } from "./text-to-speech-form";
+import { VoiceSelector } from "./voice-selector";
 
 export const SettingsPanelSettings = () => {
   const form = useTypedAppFormContext(ttsFormOptions);
@@ -15,9 +16,7 @@ export const SettingsPanelSettings = () => {
     <>
       {/* voice style dropdown section  */}
       <div className="border-b border-dashed p-4">
-        <p className="text-sm text-muted-foreground">
-          Voice selector coming soon
-        </p>
+        <VoiceSelector />
       </div>
 
       {/* voice adjustment section */}
