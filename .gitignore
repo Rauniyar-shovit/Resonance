@@ -46,3 +46,7 @@ next-env.d.ts
 /lib/generated/prisma
 
 /scripts/system-voices
+
+__pycache__
+
+chatterbox_tts.py
