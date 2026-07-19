@@ -22,10 +22,10 @@ export const GenerateButton = ({
       disabled={disabled}
     >
       {isSubmitting ? (
-        <>
+        <div className="flex items-center justify-center gap-2">
           <Spinner className="size-3" />
           Generating...
-        </>
+        </div>
       ) : (
         "Generate speech"
       )}

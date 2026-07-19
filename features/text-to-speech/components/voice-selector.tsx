@@ -95,7 +95,7 @@ export const VoiceSelector = () => {
               <SelectLabel> Team Voices</SelectLabel>
 
               {customVoices.map((v) => (
-                <SelectItem key={v.id}>
+                <SelectItem key={v.id} value={v.id}>
                   <VoiceAvatar seed={v.id} name={v.name} />
                   <span className="truncate text-sm font-medium ">
                     {v.name}
@@ -115,7 +115,7 @@ export const VoiceSelector = () => {
               <SelectLabel> Built-in Voices</SelectLabel>
 
               {systemVoices.map((v) => (
-                <SelectItem key={v.id}>
+                <SelectItem key={v.id} value={v.id}>
                   <VoiceAvatar seed={v.id} name={v.name} />
                   <span className="truncate text-sm font-medium ">
                     {v.name}

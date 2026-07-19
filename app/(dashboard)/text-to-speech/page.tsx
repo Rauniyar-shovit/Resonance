@@ -15,7 +15,7 @@ const TextToSpeechPage = async ({
   prefetch(trpc.voices.getAll.queryOptions());
   return (
     <HydrateClient>
-      <TextToSpeechView initialValues={{ text, voiceId }} />;
+      <TextToSpeechView initialValues={{ text, voiceId }} />
     </HydrateClient>
   );
 };

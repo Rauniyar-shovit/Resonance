@@ -1,0 +1,25 @@
+import React from "react";
+
+import type { Metadata } from "next";
+import { trpc, HydrateClient, prefetch } from "@/trpc/server";
+import TextToSpeechDetailView from "@/features/text-to-speech/views/text-to-speech-detail-view";
+
+export const metadata: Metadata = { title: "Text To Speech" };
+const TextToSpeechDetailsPage = async ({
+  params,
+}: {
+  params: Promise<{ generationId: string }>;
+}) => {
+  const { generationId } = await params;
+
+  prefetch(trpc.generations.getById.queryOptions({ id: generationId }));
+  prefetch(trpc.voices.getAll.queryOptions());
+
+  return (
+    <HydrateClient>
+      <TextToSpeechDetailView generationId={generationId} />
+    </HydrateClient>
+  );
+};
+
+export default TextToSpeechDetailsPage;
