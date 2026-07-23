@@ -1,7 +1,6 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Coins } from "lucide-react";
 import { COST_PER_UNIT, TEXT_MAX_LENGTH } from "../data/constants";
@@ -9,6 +8,10 @@ import { useTypedAppFormContext } from "@/hooks/use-app-form";
 import { ttsFormOptions } from "./text-to-speech-form";
 import { GenerateButton } from "./generate-button";
 import { useSelector } from "@tanstack/react-form";
+import { SettingsDrawer } from "./settings-drawer";
+import { HistoryDrawer } from "./history-drawer";
+import { VoiceSelectorButton } from "./voice-selector-button";
+import { PromptSuggestion } from "./prompt-suggestion";
 
 export const TextInputPanel = () => {
   const form = useTypedAppFormContext(ttsFormOptions);
@@ -36,8 +39,14 @@ export const TextInputPanel = () => {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-linear-to-t from background to-transparent" />
       </div>
       <div className="shrink-0 p-4 lg:p-6">
-        {/* mobile layout   */}
+        {/* mobile layout */}
         <div className="flex flex-col gap-3 lg:hidden">
+          <div className="flex items-center gap-2">
+            <SettingsDrawer>
+              <VoiceSelectorButton />
+            </SettingsDrawer>
+            <HistoryDrawer />
+          </div>
           <GenerateButton
             className="w-full"
             disabled={isSubmitting}
@@ -45,7 +54,6 @@ export const TextInputPanel = () => {
             onSubmit={() => form.handleSubmit()}
           />
         </div>
-
         {/* Desktop layout */}
         {text.length > 0 ? (
           <div className=" flex items-center justify-between">
@@ -77,9 +85,9 @@ export const TextInputPanel = () => {
           </div>
         ) : (
           <div className="hidden lg:block">
-            <p className="text-sm text-muted-foreground">
-              Get started by typing or pasting text above
-            </p>
+            <PromptSuggestion
+              onSelect={(prompt) => form.setFieldValue("text", prompt)}
+            />
           </div>
         )}
       </div>
