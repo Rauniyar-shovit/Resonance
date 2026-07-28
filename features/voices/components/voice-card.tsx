@@ -25,9 +25,9 @@ import { VoiceAvatar } from "@/components/voice-avatar/voice-avatar";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "@/trpc/routers/_app";
 import { VOICE_CATEGORY_LABELS } from "@/features/voices/data/voice-categories";
+import { useAudioPlayback } from "@/hooks/use-audio-playback";
 import { useTRPC } from "@/trpc/client";
 import { useState } from "react";
-import { useAudioPlayback } from "@/hooks/use-audio-playback";
 
 export type VoiceItem =
   inferRouterOutputs<AppRouter>["voices"]["getAll"]["custom"][number];
@@ -126,24 +126,17 @@ export function VoiceCard({ voice }: VoiceCardProps) {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button
-                variant="outline"
-                size="icon-sm"
-                className="rounded-full"
-              />
+              <Button variant="outline" size="icon-sm" className="rounded-full" />
             }
           >
             <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Link
-                href={`/text-to-speech?voiceId=${voice.id}`}
-                className="flex items-center justify-center gap-2"
-              >
-                <Mic className="size-4 text-foreground" />
-                <span className="font-medium">Use this voice</span>
-              </Link>
+            <DropdownMenuItem
+              render={<Link href={`/text-to-speech?voiceId=${voice.id}`} />}
+            >
+              <Mic className="size-4 text-foreground" />
+              <span className="font-medium">Use this voice</span>
             </DropdownMenuItem>
             {voice.variant === "CUSTOM" && (
               <DropdownMenuItem

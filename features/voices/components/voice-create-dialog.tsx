@@ -19,14 +19,14 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { VoiceCreateForm } from "./voice-create-form";
 import { Button } from "@/components/ui/button";
-// import { useCheckout } from "@/features/billing/hooks/use-checkout";
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { VoiceCreateForm } from "./voice-create-form";
 
 interface VoiceCreateDialogProps {
-  children?: React.ReactNode;
+  /** Single element used as the trigger; Base UI merges trigger props into it. */
+  children?: React.ReactElement;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -38,28 +38,28 @@ export function VoiceCreateDialog({
 }: VoiceCreateDialogProps) {
   const isMobile = useIsMobile();
 
-  //   const { checkout } = useCheckout();
+  // const { checkout } = useCheckout();
 
-  //   const handleError = useCallback(
-  //     (message: string) => {
-  //       if (message === "SUBSCRIPTION_REQUIRED") {
-  //         toast.error("Subscription required", {
-  //           action: {
-  //             label: "Subscribe",
-  //             onClick: () => checkout(),
-  //           },
-  //         });
-  //       } else {
-  //         toast.error(message);
-  //       }
-  //     },
-  //     [checkout],
-  //   );
+  // const handleError = useCallback(
+  //   (message: string) => {
+  //     if (message === "SUBSCRIPTION_REQUIRED") {
+  //       toast.error("Subscription required", {
+  //         action: {
+  //           label: "Subscribe",
+  //           onClick: () => checkout(),
+  //         },
+  //       });
+  //     } else {
+  //       toast.error(message);
+  //     }
+  //   },
+  //   [checkout],
+  // );
 
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        {children && <DrawerTrigger>{children}</DrawerTrigger>}
+        {children && <DrawerTrigger render={children} />}
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>Create custom voice</DrawerTitle>
@@ -70,12 +70,12 @@ export function VoiceCreateDialog({
           </DrawerHeader>
           <VoiceCreateForm
             scrollable
-            onError={handleError}
+            // onError={handleError}
             footer={(submit) => (
               <DrawerFooter>
                 {submit}
-                <DrawerClose>
-                  <Button variant="outline">Cancel</Button>
+                <DrawerClose render={<Button variant="outline" />}>
+                  Cancel
                 </DrawerClose>
               </DrawerFooter>
             )}
@@ -87,7 +87,7 @@ export function VoiceCreateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {children && <DialogTrigger>{children}</DialogTrigger>}
+      {children && <DialogTrigger render={children} />}
       <DialogContent>
         <DialogHeader className="text-left">
           <DialogTitle>Create custom voice</DialogTitle>

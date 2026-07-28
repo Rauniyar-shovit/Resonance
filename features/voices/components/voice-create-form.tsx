@@ -57,7 +57,7 @@ import {
   VOICE_CATEGORIES,
   VOICE_CATEGORY_LABELS,
 } from "@/features/voices/data/voice-categories";
-// import { VoiceRecorder } from "./voice-recorder";
+import { VoiceRecorder } from "./voice-recorder";
 
 const LANGUAGE_OPTIONS = locales.all
   .filter((l) => l.tag && l.tag.includes("-") && l.name)
@@ -189,26 +189,28 @@ function LanguageCombobox({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          aria-invalid={isInvalid}
-          className={cn(
-            "h-9 w-full justify-between font-normal",
-            !value && "text-muted-foreground",
-          )}
-        >
-          <div className="flex items-center gap-2 truncate">
-            <Globe className="size-4 shrink-0 text-muted-foreground" />
-            {value ? selectedLabel : "Select language..."}
-          </div>
-          <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            aria-invalid={isInvalid}
+            className={cn(
+              "h-9 w-full justify-between font-normal",
+              !value && "text-muted-foreground",
+            )}
+          />
+        }
+      >
+        <div className="flex items-center gap-2 truncate">
+          <Globe className="size-4 shrink-0 text-muted-foreground" />
+          {value ? selectedLabel : "Select language..."}
+        </div>
+        <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
       </PopoverTrigger>
-      <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
+      <PopoverContent className="w-(--anchor-width) p-0">
         <Command>
           <CommandInput placeholder="Search language..." />
           <CommandList>
@@ -372,11 +374,11 @@ export function VoiceCreateForm({
                     />
                   </TabsContent>
                   <TabsContent value="record">
-                    {/* <VoiceRecorder
+                    <VoiceRecorder
                       file={field.state.value}
                       onFileChange={field.handleChange}
                       isInvalid={isInvalid}
-                    /> */}
+                    />
                   </TabsContent>
                 </Tabs>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -425,7 +427,7 @@ export function VoiceCreateForm({
                   </div>
                   <Select
                     value={field.state.value}
-                    onValueChange={field.handleChange}
+                    onValueChange={(value) => field.handleChange(value ?? "")}
                   >
                     <SelectTrigger className="w-full pl-10">
                       <SelectValue placeholder="Select category..." />
