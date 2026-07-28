@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { TRPCReactProvider } from "@/trpc/client";
-
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -33,7 +33,7 @@ export default function RootLayout({
           className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
         >
           <body className="min-h-full flex flex-col">
-            {children}
+            <NuqsAdapter>{children}</NuqsAdapter>
             <Toaster />
           </body>
         </html>
