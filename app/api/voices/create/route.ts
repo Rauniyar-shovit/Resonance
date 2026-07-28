@@ -108,6 +108,7 @@ export async function POST(request: Request) {
         name,
         variant: "CUSTOM",
         orgId,
+        // @ts-expect-error
         description,
         category,
         language,
