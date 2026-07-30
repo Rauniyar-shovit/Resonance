@@ -15,6 +15,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UsageContainer } from "@/features/billing/components/usage-container";
 import { OrganizationSwitcher, useClerk, UserButton } from "@clerk/nextjs";
 import {
   AudioLines,
@@ -165,6 +166,7 @@ const DashboardSidebar = () => {
       </SidebarContent>
 
       <SidebarFooter className="gap-3 py-3">
+        <UsageContainer />
         <SidebarMenu>
           <SidebarMenuItem>
             <UserButton
