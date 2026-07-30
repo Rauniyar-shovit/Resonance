@@ -6,6 +6,8 @@ import { prisma } from "@/lib/db";
 import { uploadAudio } from "@/lib/r2";
 import { VOICE_CATEGORIES } from "@/features/voices/data/voice-categories";
 import { VoiceCategory } from "@/lib/generated/prisma/enums";
+import { polar } from "@/lib/polar";
+import { error } from "console";
 
 const createVoiceSchema = z.object({
   name: z.string().min(1, "Voice name is required"),
@@ -24,7 +26,19 @@ export async function POST(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  //
+  //check for active subscription before voice creation
+  try {
+    const customerState = await polar.customers.getStateExternal(orgId);
+
+    const hasActiveSubscription =
+      (customerState.active_subscriptions ?? []).length > 0;
+
+    if (!hasActiveSubscription) {
+      return Response.json({ error: "SUBSCRIPTION_REQUIRED" }, { status: 403 });
+    }
+  } catch {
+    return Response.json({ error: "SUBSCRIPTION_REQUIRED" }, { status: 403 });
+  }
 
   const url = new URL(request.url);
 
@@ -151,6 +165,24 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+
+  // ingest usage event
+
+  // Ingest usage event to Polar (fire-and-forget, don't block response)
+  polar.events
+    .ingest({
+      events: [
+        {
+          name: "voice_creation",
+          external_customer_id: orgId,
+          metadata: {},
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    })
+    .catch(() => {
+      // Silently fail - don't break the user experience for metering errors
+    });
 
   return Response.json(
     { name, message: "Voice created successfully" },
