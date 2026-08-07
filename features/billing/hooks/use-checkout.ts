@@ -6,7 +6,6 @@ import { useCallback } from "react";
 export const useCheckout = () => {
   const trpc = useTRPC();
   const mutation = useMutation(trpc.billing.createCheckout.mutationOptions({}));
-  console.log("🚀 ~ useCheckout ~ mutation:", mutation);
 
   const checkout = useCallback(() => {
     mutation.mutate(undefined, {

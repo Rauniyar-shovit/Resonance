@@ -7,13 +7,13 @@ import { useCheckout } from "@/features/billing/hooks/use-checkout";
 import { useTRPC } from "@/trpc/client";
 
 function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-AU", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "AUD",
+    currency: "USD",
   }).format(cents / 100);
 }
 
-const UpgradeCard = () => {
+function UpgradeCard() {
   const { checkout, isPending: isCheckoutPending } = useCheckout();
 
   return (
@@ -23,19 +23,20 @@ const UpgradeCard = () => {
           Pay as you go
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          Generate speech starting at $0.30 per 1000 characters
+          Generate speech starting at $0.30 per 1,000 characters
         </p>
       </div>
       <Button
-        variant={"outline"}
-        className={"w-full text-xs"}
-        size={"sm"}
+        variant="outline"
+        className="w-full text-xs"
+        size="sm"
         disabled={isCheckoutPending}
         onClick={checkout}
       >
         {isCheckoutPending ? (
           <>
-            <Spinner className="size-3" /> Redirecting...
+            <Spinner className="size-3" />
+            Redirecting...
           </>
         ) : (
           "Upgrade"
@@ -43,9 +44,9 @@ const UpgradeCard = () => {
       </Button>
     </div>
   );
-};
+}
 
-const UsageCard = ({ estimatedCostCents }: { estimatedCostCents: number }) => {
+function UsageCard({ estimatedCostCents }: { estimatedCostCents: number }) {
   const trpc = useTRPC();
   const portalMutation = useMutation(
     trpc.billing.createPortalSession.mutationOptions({}),
@@ -63,25 +64,26 @@ const UsageCard = ({ estimatedCostCents }: { estimatedCostCents: number }) => {
     <div className="flex flex-col gap-3">
       <div>
         <p className="text-sm font-semibold tracking-tight text-foreground">
-          Current Usage
+          Current usage
         </p>
-        <p className="text-xl  font-bold  tracking-tight text-foreground mt-1">
-          {formatCurrency(estimatedCostCents)}{" "}
+        <p className="text-xl font-bold tracking-tight text-foreground mt-1">
+          {formatCurrency(estimatedCostCents)}
         </p>
         <p className="text-xs text-muted-foreground mt-0.5">
           Estimated this period
         </p>
       </div>
       <Button
-        variant={"outline"}
-        className={"w-full text-xs"}
-        size={"sm"}
+        variant="outline"
+        className="w-full text-xs"
+        size="sm"
         disabled={portalMutation.isPending}
         onClick={openPortal}
       >
         {portalMutation.isPending ? (
           <>
-            <Spinner className="size-3" /> Redirecting...
+            <Spinner className="size-3" />
+            Redirecting...
           </>
         ) : (
           "Manage Subscription"
@@ -89,14 +91,14 @@ const UsageCard = ({ estimatedCostCents }: { estimatedCostCents: number }) => {
       </Button>
     </div>
   );
-};
+}
 
-export const UsageContainer = () => {
+export function UsageContainer() {
   const trpc = useTRPC();
   const { data } = useQuery(trpc.billing.getStatus.queryOptions());
 
   return (
-    <div className="group-data-[collapsible=icon]:hidden bg-background border border-broder rounded-lg p-3">
+    <div className="group-data-[collapsible=icon]:hidden bg-background border border-border rounded-lg p-3">
       {data?.hasActiveSubscription ? (
         <UsageCard estimatedCostCents={data.estimatedCostCents} />
       ) : (
@@ -104,4 +106,4 @@ export const UsageContainer = () => {
       )}
     </div>
   );
-};
+}

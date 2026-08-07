@@ -7,6 +7,7 @@ import { TEXT_MAX_LENGTH } from "@/features/text-to-speech/data/constants";
 import { createTRPCRouter, orgProcedure } from "../init";
 import * as Sentry from "@sentry/nextjs";
 import { polar } from "@/lib/polar";
+import { env } from "@/lib/env";
 
 export const generationsRouter = createTRPCRouter({
   getById: orgProcedure
@@ -210,9 +211,9 @@ export const generationsRouter = createTRPCRouter({
         .ingest({
           events: [
             {
-              name: "tts_generation",
+              name: env.POLAR_METER_TTS_GENERATION,
               external_customer_id: ctx.orgId,
-              metadata: { characters: input.text.length },
+              metadata: { [env.POLAR_METER_TTS_PROPERTY]: input.text.length },
               timestamp: new Date().toISOString(),
             },
           ],
