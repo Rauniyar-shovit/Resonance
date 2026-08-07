@@ -91,7 +91,7 @@ function FileDropzone({
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({
       accept: { "audio/*": [] },
-      maxSize: 20 * 1024 * 1024,
+      maxSize: 4 * 1024 * 1024,
       multiple: false,
       onDrop: (acceptedFiles) => {
         if (acceptedFiles.length > 0) {
@@ -161,7 +161,7 @@ function FileDropzone({
         </p>
 
         <p className="text-center text-sm text-muted-foreground">
-          Supports all audio formats, max size 20MB
+          Supports all audio formats, max size 4MB
         </p>
       </div>
 
