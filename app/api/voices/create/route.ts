@@ -15,7 +15,9 @@ const createVoiceSchema = z.object({
   description: z.string().nullish(),
 });
 
-const MAX_UPLOAD_SIZE_BYTES = 20 * 1024 * 1024; // 20 MB
+// Vercel Functions reject request bodies over 4.5 MB at the edge with a generic
+// 413 before this handler runs, so cap below that to surface our own message.
+const MAX_UPLOAD_SIZE_BYTES = 4 * 1024 * 1024; // 4 MB
 const MIN_AUDIO_DURATION_SECONDS = 10;
 
 export async function POST(request: Request) {
@@ -70,7 +72,7 @@ export async function POST(request: Request) {
 
   if (fileBuffer.byteLength > MAX_UPLOAD_SIZE_BYTES) {
     return Response.json(
-      { error: "Audio file exceeds the 20 MB size limit" },
+      { error: "Audio file exceeds the 4 MB size limit" },
       { status: 413 },
     );
   }
