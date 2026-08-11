@@ -29,7 +29,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    "app/(dashboard)/text-to-speech"
+    "app/dashboard/text-to-speech"
   ],
   "exclude": ["node_modules"]
 }

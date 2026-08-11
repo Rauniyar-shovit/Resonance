@@ -60,8 +60,8 @@ const NavSection = ({ label, items, pathname }: NavSectionProps) => {
               <SidebarMenuButton
                 isActive={
                   item.url
-                    ? item.url === "/"
-                      ? pathname === "/"
+                    ? item.url === "/dashboard"
+                      ? pathname === "/dashboard"
                       : pathname.startsWith(item.url)
                     : false
                 }
@@ -97,9 +97,13 @@ const DashboardSidebar = () => {
   const clerk = useClerk();
 
   const mainMenuItem: MenuItem[] = [
-    { title: "Dahsboard", url: "/", icon: Home },
-    { title: "Explore Voices", url: "/voices", icon: LayoutGrid },
-    { title: "Text to Speech", url: "/text-to-speech", icon: AudioLines },
+    { title: "Dashboard", url: "/dashboard", icon: Home },
+    { title: "Explore Voices", url: "/dashboard/voices", icon: LayoutGrid },
+    {
+      title: "Text to Speech",
+      url: "/dashboard/text-to-speech",
+      icon: AudioLines,
+    },
     {
       title: "Voice Cloning",
       icon: Volume2,
