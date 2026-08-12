@@ -72,13 +72,14 @@
     --chart-3: oklch(0.779 0.108 350);
     --chart-4: oklch(0.839 0.147 115);
     --chart-5: oklch(0.735 0.17 70);
-    --sidebar: oklch(1 0 0);
+    /* The sidebar sits back a step from the page, so cards inside it read as raised. */
+    --sidebar: oklch(0.962 0 0);
     --sidebar-foreground: oklch(0.514 0 0);
     --sidebar-primary: oklch(0.165 0 0);
     --sidebar-primary-foreground: oklch(1 0 0);
-    --sidebar-accent: oklch(0.984 0 0);
+    --sidebar-accent: oklch(1 0 0);
     --sidebar-accent-foreground: oklch(0.165 0 0);
-    --sidebar-border: oklch(0.893 0 0);
+    --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.686 0 0);
 }
 

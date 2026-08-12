@@ -7,7 +7,11 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen} className="h-svh">
+    <SidebarProvider
+      defaultOpen={defaultOpen}
+      className="h-svh"
+      style={{ "--sidebar-width": "17rem" } as React.CSSProperties}
+    >
       <DashboardSidebar />
       <SidebarInset className="min-h-0 min-w-0">
         <main className="flex min-h-0 flex-1 flex-col">{children}</main>

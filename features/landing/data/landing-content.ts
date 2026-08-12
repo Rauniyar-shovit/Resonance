@@ -2,6 +2,7 @@ import { VOICE_CATEGORY_LABELS } from "@/features/voices/data/voice-categories";
 import {
   COST_PER_UNIT,
   TEXT_MAX_LENGTH,
+  VOICE_GENERATION_COST,
 } from "@/features/text-to-speech/data/constants";
 
 /** The line every sampler voice reads, so the voices can be compared directly. */
@@ -141,11 +142,11 @@ export const CATEGORY_LABELS = Object.values(VOICE_CATEGORY_LABELS);
 /**
  * Advertised rate per voice generated, in dollars.
  *
- * The speech rate is not duplicated here — it derives from `COST_PER_UNIT` in
- * `features/text-to-speech/data/constants.ts`, the same constant the workspace uses
+ * Neither rate is duplicated here — both derive from
+ * `features/text-to-speech/data/constants.ts`, the same constants the workspace uses
  * for its live estimate, so the two can't drift. Both must match the Polar meters.
  */
-export const VOICE_GENERATION_RATE = 0.4;
+export const VOICE_GENERATION_RATE = VOICE_GENERATION_COST;
 
 /** Formats a dollar rate for prose, so copy can't drift from the constants. */
 const formatRate = (dollars: number) =>

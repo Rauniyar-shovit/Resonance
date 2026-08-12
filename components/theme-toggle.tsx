@@ -43,7 +43,7 @@ const setDark = (next: boolean) => {
 };
 
 /**
- * Local light/dark toggle for the landing page.
+ * Light/dark toggle, shared by the landing page and the workspace sidebar.
  *
  * The app has `next-themes` installed but no `ThemeProvider` mounted in the root
  * layout, so this drives the `.dark` class on <html> directly — the same hook

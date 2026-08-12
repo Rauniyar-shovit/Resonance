@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { Wordmark } from "@/components/wordmark";
 import { GenerationControls } from "@/features/landing/components/generation-controls";
 import { PricingSection } from "@/features/landing/components/pricing-section";
-import { ThemeToggle } from "@/features/landing/components/theme-toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { VoiceSampler } from "@/features/landing/components/voice-sampler";
 import {
   CATEGORY_LABELS,
@@ -15,26 +16,6 @@ const SECTION = `${SHELL} py-[clamp(72px,9vw,140px)]`;
 const HEADING =
   "text-[clamp(2rem,3.8vw,3.25rem)] font-semibold leading-[1.02] tracking-[-0.035em]";
 const EYEBROW = "font-mono text-[11px] tracking-[0.12em] text-muted-foreground";
-
-/** The five-bar wordmark, sized by the caller. */
-const Wordmark = ({ height }: { height: number }) => {
-  const scale = height / 15;
-  return (
-    <span
-      className="flex items-end gap-0.5"
-      style={{ height: `${height}px` }}
-      aria-hidden
-    >
-      {[6, 13, 9, 15, 5].map((bar, index) => (
-        <span
-          key={index}
-          className={index === 2 ? "bg-(--lp-accent)" : "bg-foreground"}
-          style={{ width: "1.5px", height: `${bar * scale}px` }}
-        />
-      ))}
-    </span>
-  );
-};
 
 /** Repeating tick marks used as a section divider — a ruler, not a rule. */
 const Divider = () => (
