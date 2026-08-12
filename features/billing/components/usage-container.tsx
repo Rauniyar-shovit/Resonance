@@ -9,7 +9,7 @@ import { useTRPC } from "@/trpc/client";
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "AUD",
   }).format(cents / 100);
 }
 

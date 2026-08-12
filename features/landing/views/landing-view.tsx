@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { GenerationControls } from "@/features/landing/components/generation-controls";
-import { PricingCard } from "@/features/landing/components/pricing-card";
+import { PricingSection } from "@/features/landing/components/pricing-section";
 import { ThemeToggle } from "@/features/landing/components/theme-toggle";
 import { VoiceSampler } from "@/features/landing/components/voice-sampler";
 import {
@@ -265,19 +265,8 @@ export const LandingView = () => {
           </div>
         </section>
 
-        {/* Pricing */}
-        <section className="border-y border-border bg-muted">
-          <div className={`${SECTION} flex flex-col items-center text-center`}>
-            <h2 className={`${HEADING} max-w-[16ch]`}>
-              You pay for what you generate.
-            </h2>
-            <p className="mt-5 max-w-[44ch] text-[17px] leading-[1.6] text-muted-foreground">
-              No seats, no minimums. Add the whole team and only the characters
-              count.
-            </p>
-            <PricingCard />
-          </div>
-        </section>
+        {/* Pricing — brings its own section wrapper and copy. */}
+        <PricingSection />
 
         {/* FAQ */}
         <section className={SECTION}>

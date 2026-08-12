@@ -1,4 +1,8 @@
 import { VOICE_CATEGORY_LABELS } from "@/features/voices/data/voice-categories";
+import {
+  COST_PER_UNIT,
+  TEXT_MAX_LENGTH,
+} from "@/features/text-to-speech/data/constants";
 
 /** The line every sampler voice reads, so the voices can be compared directly. */
 export const SAMPLER_SCRIPT =
@@ -24,10 +28,34 @@ export interface SamplerVoice {
  * Once playing, the sampler reads `audio.duration` off the element instead.
  */
 export const SAMPLER_VOICES: SamplerVoice[] = [
-  { id: "walter", name: "Walter", label: "Narrative · en-US", seed: 1103, duration: 9.3 },
-  { id: "abigail", name: "Abigail", label: "Conversational · en-GB", seed: 5711, duration: 8.7 },
-  { id: "marisol", name: "Marisol", label: "Advertising · en-US", seed: 9137, duration: 8.4 },
-  { id: "gavin", name: "Gavin", label: "Meditation · en-US", seed: 4483, duration: 8.3 },
+  {
+    id: "walter",
+    name: "Walter",
+    label: "Narrative · en-US",
+    seed: 1103,
+    duration: 9.3,
+  },
+  {
+    id: "abigail",
+    name: "Abigail",
+    label: "Conversational · en-GB",
+    seed: 5711,
+    duration: 8.7,
+  },
+  {
+    id: "marisol",
+    name: "Marisol",
+    label: "Advertising · en-US",
+    seed: 9137,
+    duration: 8.4,
+  },
+  {
+    id: "gavin",
+    name: "Gavin",
+    label: "Meditation · en-US",
+    seed: 4483,
+    duration: 8.3,
+  },
 ];
 
 export interface Step {
@@ -110,17 +138,57 @@ export const USE_CASES: UseCase[] = [
 /** Derived from the Prisma `VoiceCategory` enum so the page can't drift from the schema. */
 export const CATEGORY_LABELS = Object.values(VOICE_CATEGORY_LABELS);
 
-export interface PricingFeature {
+/**
+ * Advertised rate per voice generated, in dollars.
+ *
+ * The speech rate is not duplicated here — it derives from `COST_PER_UNIT` in
+ * `features/text-to-speech/data/constants.ts`, the same constant the workspace uses
+ * for its live estimate, so the two can't drift. Both must match the Polar meters.
+ */
+export const VOICE_GENERATION_RATE = 0.4;
+
+/** Formats a dollar rate for prose, so copy can't drift from the constants. */
+const formatRate = (dollars: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "AUD",
+  }).format(dollars);
+
+export interface PricingPlan {
   label: string;
+  /** Dollars, formatted at render time. */
+  price: number;
+  unit: string;
+  blurb: string;
+  features: string[];
 }
 
-export const PRICING_FEATURES: PricingFeature[] = [
-  { label: "Unlimited members — no per-seat charge" },
-  { label: "5,000 characters per generation" },
-  { label: "Voice cloning from a 10-second, 4 MB sample" },
-  { label: "Shared voice library across twelve categories" },
-  { label: "Full generation history, org-scoped" },
-  { label: "Creativity, Voice Variety, Expression Range and Natural Flow" },
+/** Two meters, billed separately — mirrors the two Polar meters on "Resonance Pro". */
+export const PRICING_PLANS: PricingPlan[] = [
+  {
+    label: "Speech",
+    price: COST_PER_UNIT * 1000,
+    unit: "per 1,000 characters",
+    blurb:
+      "Metered on the characters you send to the model, counted per generation.",
+    features: [
+      `${TEXT_MAX_LENGTH.toLocaleString("en-US")} characters per generation`,
+      "Creativity, Voice Variety, Expression Range and Natural Flow",
+      "Full generation history, org-scoped",
+    ],
+  },
+  {
+    label: "Voice generation",
+    price: VOICE_GENERATION_RATE,
+    unit: "per voice generated",
+    blurb:
+      "Charged once per voice you generate. Reuse it across every script at no extra cost.",
+    features: [
+      "Cloning from a 10-second, 4 MB sample",
+      "Shared voice library across twelve categories",
+      "Unlimited members — no per-seat charge",
+    ],
+  },
 ];
 
 export interface Faq {
@@ -156,8 +224,7 @@ export const FAQS: Faq[] = [
   },
   {
     question: "How does billing work?",
-    answer:
-      "$0.30 per 1,000 characters generated, plus a per-voice fee when you create a custom voice. There are no seat fees.",
+    answer: `Two meters. ${formatRate(COST_PER_UNIT * 1000)} per 1,000 characters of speech generated, and ${formatRate(VOICE_GENERATION_RATE)} each time you generate a voice. There are no seat fees.`,
   },
   {
     question: "Can I find something I generated last month?",
