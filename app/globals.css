@@ -81,6 +81,27 @@
     --sidebar-accent-foreground: oklch(0.165 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.686 0 0);
+
+    /*
+     * The same palette again, in sRGB, for Clerk.
+     *
+     * Clerk is handed its colours as values rather than reading the cascade, and it
+     * builds shades from the primary and neutral ones — so they have to be colours
+     * its parser can take apart, which oklch() is not a safe bet for. Declaring them
+     * as variables is what lets the appearance live on the server-rendered
+     * ClerkProvider and still follow the theme. Keep these in step with the tokens
+     * above.
+     */
+    --clerk-background: #ffffff;
+    --clerk-foreground: #0e0e0e;
+    --clerk-primary: #0e0e0e;
+    --clerk-primary-foreground: #ffffff;
+    --clerk-neutral: #0e0e0e;
+    --clerk-muted: #f2f2f2;
+    --clerk-muted-foreground: #808080;
+    --clerk-input: #ffffff;
+    --clerk-border: #e5e5e5;
+    --clerk-danger: #b22728;
 }
 
 .dark {
@@ -115,6 +136,18 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+
+    --clerk-background: #171717;
+    --clerk-foreground: #fafafa;
+    --clerk-primary: #e5e5e5;
+    --clerk-primary-foreground: #171717;
+    /* Light shades on a dark ground, so borders and hover washes stay visible. */
+    --clerk-neutral: #ffffff;
+    --clerk-muted: #262626;
+    --clerk-muted-foreground: #a1a1a1;
+    --clerk-input: #171717;
+    --clerk-border: #404040;
+    --clerk-danger: #ff6467;
 }
 
 @layer base {

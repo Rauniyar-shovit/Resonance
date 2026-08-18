@@ -1,6 +1,6 @@
 "use client";
 
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle, useIsDarkTheme } from "@/components/theme-toggle";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +19,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Wordmark } from "@/components/wordmark";
 import { UsageContainer } from "@/features/billing/components/usage-container";
 import { VoiceCreateDialog } from "@/features/voices/components/voice-create-dialog";
+import {
+  clerkVariables,
+  ORGANIZATION_POPOVER_ELEMENTS,
+  PREVIEW_TEXT_ELEMENTS,
+  PROFILE_MODAL_ELEMENTS,
+  USER_POPOVER_ELEMENTS,
+} from "@/lib/clerk-appearance";
 import { EYEBROW } from "@/lib/typography";
 import { OrganizationSwitcher, useClerk, UserButton } from "@clerk/nextjs";
 import {
@@ -61,7 +68,9 @@ const NavMarker = ({ icon: Icon }: { icon: LucideIcon }) => (
 const NavSection = ({ label, items, pathname }: NavSectionProps) => {
   return (
     <SidebarGroup>
-      {label && <SidebarGroupLabel className={EYEBROW}>{label}</SidebarGroupLabel>}
+      {label && (
+        <SidebarGroupLabel className={EYEBROW}>{label}</SidebarGroupLabel>
+      )}
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (
@@ -101,6 +110,7 @@ const NavSection = ({ label, items, pathname }: NavSectionProps) => {
 const DashboardSidebar = () => {
   const pathname = usePathname();
   const clerk = useClerk();
+  const dark = useIsDarkTheme();
 
   const [voiceDialogOpen, setVoiceDialogOpen] = useState(false);
 
@@ -153,27 +163,43 @@ const DashboardSidebar = () => {
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className={`${EYEBROW} px-1 group-data-[collapsible=icon]:hidden`}>
+            <span
+              className={`${EYEBROW} px-1 group-data-[collapsible=icon]:hidden`}
+            >
               Workspace
             </span>
             <SidebarMenu>
               <SidebarMenuItem>
                 <OrganizationSwitcher
                   hidePersonal
+                  // The profile opens as its own mount, so it needs the theme handed
+                  // to it separately from the switcher's own appearance.
+                  organizationProfileProps={{
+                    appearance: {
+                      variables: clerkVariables(dark),
+                      elements: PROFILE_MODAL_ELEMENTS,
+                    },
+                  }}
                   fallback={
                     <Skeleton className="h-8.5 w-full group-data-[collapsible=icon]:size-8 rounded-md border bg-card" />
                   }
                   appearance={{
+                    variables: clerkVariables(dark),
                     elements: {
+                      ...ORGANIZATION_POPOVER_ELEMENTS,
+                      ...PREVIEW_TEXT_ELEMENTS,
                       rootBox:
                         "w-full! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:flex! group-data-[collapsible=icon]:justify-center!",
                       organizationSwitcherTrigger:
-                        "w-full! justify-between! bg-card! border! border-border! rounded-lg! pl-1! pr-2! py-1! gap-3! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! shadow-none!",
+                        "w-full! justify-between! bg-card! border! border-border! rounded-lg! pl-1! pr-2! py-1! gap-3! shadow-none! hover:bg-muted! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1!",
                       organizationPreview: "gap-2!",
                       organizationPreviewAvatarBox: "size-6! rounded-sm!",
                       organizationPreviewTextContainer:
                         "text-xs! tracking-tight! font-medium! text-foreground! group-data-[collapsible=icon]:hidden!",
-                      organizationPreviewMainIdentifier: "text-[13px]!",
+                      // Keeps the pinned colour from PREVIEW_TEXT_ELEMENTS; only
+                      // the trigger's name needs the tighter size.
+                      organizationPreviewMainIdentifier:
+                        "text-[13px]! text-foreground!",
                       organizationSwitcherTriggerIcon:
                         "size-4! text-muted-foreground! group-data-[collapsible=icon]:hidden!",
                     },
@@ -199,15 +225,24 @@ const DashboardSidebar = () => {
             <SidebarMenuItem>
               <UserButton
                 showName
+                userProfileProps={{
+                  appearance: {
+                    variables: clerkVariables(dark),
+                    elements: PROFILE_MODAL_ELEMENTS,
+                  },
+                }}
                 fallback={
                   <Skeleton className="h-8.5 w-full group-data-[collapsible=icon]:size-8 rounded-md border border-border bg-card" />
                 }
                 appearance={{
+                  variables: clerkVariables(dark),
                   elements: {
+                    ...USER_POPOVER_ELEMENTS,
+                    ...PREVIEW_TEXT_ELEMENTS,
                     rootBox:
                       "w-full! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:flex! group-data-[collapsible=icon]:justify-center!",
                     userButtonTrigger:
-                      "w-full! justify-between! bg-card! border! border-border! rounded-lg! pl-1! pr-2! py-1! shadow-none! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! group-data-[collapsible=icon]:after:hidden!",
+                      "w-full! justify-between! bg-card! border! border-border! rounded-lg! pl-1! pr-2! py-1! shadow-none! hover:bg-muted! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! group-data-[collapsible=icon]:after:hidden!",
                     userButtonBox: "flex-row-reverse! gap-2!",
                     userButtonOuterIdentifier:
                       "text-[13px]! tracking-tight! font-medium! text-foreground! pl-0! group-data-[collapsible=icon]:hidden!",

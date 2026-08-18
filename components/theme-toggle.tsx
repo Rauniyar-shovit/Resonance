@@ -43,6 +43,28 @@ const setDark = (next: boolean) => {
 };
 
 /**
+ * Whether the workspace is currently in dark mode, and the hook that puts it there.
+ *
+ * Applying `.dark` to <html> lives here rather than on the toggle button, so a page
+ * that reads the theme without offering a switch — the Clerk auth pages — still
+ * gets the dark tokens. The server snapshot is light, so SSR and the first client
+ * render agree and React re-renders once if the stored preference differs.
+ *
+ * Components that cannot express colour as CSS-variable-backed classes read the
+ * return value instead: Clerk is the case in point, since its internals are painted
+ * from a palette handed to it rather than from the cascade.
+ */
+export const useIsDarkTheme = () => {
+  const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
+
+  return dark;
+};
+
+/**
  * Light/dark toggle, shared by the landing page and the workspace sidebar.
  *
  * The app has `next-themes` installed but no `ThemeProvider` mounted in the root
@@ -51,11 +73,7 @@ const setDark = (next: boolean) => {
  * for `useTheme()` rather than running both.
  */
 export const ThemeToggle = () => {
-  const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
+  const dark = useIsDarkTheme();
 
   const toggle = useCallback(() => setDark(!isDark), []);
 
