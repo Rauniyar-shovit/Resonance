@@ -210,9 +210,4 @@ proxy.ts                Clerk middleware (Next.js 16 name)
   the palette in sRGB because Clerk is handed colours as values rather than
   reading the cascade.
 
-## Before writing framework code
 
-This project pins Next.js 16.2 and React 19.2, which differ from older
-conventions in ways your instincts may not cover. The relevant guides ship with
-the dependency — read them under `node_modules/next/dist/docs/` before reaching
-for a pattern from an older version.
