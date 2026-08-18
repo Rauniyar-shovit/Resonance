@@ -69,7 +69,7 @@ export const VoicePreviewPanel = ({
   };
 
   return (
-    <div className="hidden min-h-0 shrink-0 grow-0 basis-1/2 flex-col gap-6 overflow-hidden border-t border-border px-[clamp(20px,3vw,32px)] py-[clamp(20px,2.4vw,28px)] lg:flex">
+    <div className="hidden min-h-0 shrink-0 grow-0 basis-1/ flex-col gap-6 overflow-hidden border-t border-border px-[clamp(20px,3vw,32px)] py-[clamp(20px,2.4vw,28px)] lg:flex">
       <p className={EYEBROW}>Voice preview</p>
 
       {/* waveform */}
