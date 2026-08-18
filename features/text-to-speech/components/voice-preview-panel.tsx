@@ -1,13 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { VoiceAvatar } from "@/components/voice-avatar/voice-avatar";
-import { Pause, Play, Download, Redo, Undo } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
-import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { VoiceAvatar } from "@/components/voice-avatar/voice-avatar";
+import { EYEBROW } from "@/lib/typography";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Download, Pause, Play, Redo, Undo } from "lucide-react";
+import { useState } from "react";
 import { useWaveSurfer } from "../hooks/use-wavesurfer";
 
 type VoicePreviewPanelVoice = {
@@ -31,8 +32,6 @@ export const VoicePreviewPanel = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const selectedVoiceSeed = voice?.id ?? null;
   const selectedVoiceName = voice?.name ?? null;
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const {
     containerRef,
@@ -70,23 +69,19 @@ export const VoicePreviewPanel = ({
   };
 
   return (
-    <div className="h-full gap-8 flex-col border-t hidden flex-1 lg:flex">
-      {/* header */}
-      <div className="p-6 pb-0">
-        <h3 className="font-semibold text-foreground">Voice preview</h3>
-      </div>
+    <div className="hidden min-h-0 shrink-0 grow-0 basis-1/ flex-col gap-6 overflow-hidden border-t border-border px-[clamp(20px,3vw,32px)] py-[clamp(20px,2.4vw,28px)] lg:flex">
+      <p className={EYEBROW}>Voice preview</p>
 
-      {/* content */}
-
+      {/* waveform */}
       <div className="relative flex flex-1 items-center justify-center">
         {!isReady && (
           <div className="absolute inset-0 z-10 flex items-center justify-center">
             <Badge
-              variant={"outline"}
-              className="gap-2 bg-background/90 px-3 py-1.5 text-sm text-muted-foreground shadow-sm"
+              variant="outline"
+              className="gap-2 rounded-xl border-foreground/10 bg-background/90 px-3 py-1.5 text-sm text-muted-foreground"
             >
               <Spinner className="size-4" />
-              <span> Loading audio...</span>
+              <span>Loading audio...</span>
             </Badge>
           </div>
         )}
@@ -96,90 +91,79 @@ export const VoicePreviewPanel = ({
             "w-full cursor-pointer transition-opacity duration-200",
             !isReady && "opacity-0",
           )}
-        />{" "}
+        />
       </div>
 
-      {/* time display */}
-      <div className="flex items-center justify-center">
-        <p className="text-3xl font-semibold tabular nums tracking-tight text-foreground">
-          {formatTime(currentTime)} &nbsp;
-          <span className="text-muted-foreground">
-            /&nbsp; {formatTime(duration)}
-          </span>
-        </p>
-      </div>
+      <p className="text-center font-mono text-[clamp(1.5rem,2.6vw,2rem)] font-medium tracking-[-0.03em] tabular-nums">
+        {formatTime(currentTime)}
+        <span className="text-muted-foreground"> / {formatTime(duration)}</span>
+      </p>
 
-      {/* Footer */}
-      <div className="realtive flex flex-1 items-center p-6">
-        <div className="grid w-full grid-cols-3">
-          {/* metadata */}
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <p className="truncate text-sm font-medium text-foreground">
-              {text}
-            </p>
+      {/* metadata, transport, download */}
+      <div className="grid w-full grid-cols-3 items-center gap-4">
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <span className="truncate text-sm font-medium">{text}</span>
 
-            {selectedVoiceName && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <VoiceAvatar
-                  seed={selectedVoiceSeed ?? selectedVoiceName}
-                  name={selectedVoiceName}
-                  className="shrink-0"
-                />
-                <span className="truncate">{selectedVoiceName}</span>
-              </div>
+          {selectedVoiceName && (
+            <span className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+              <VoiceAvatar
+                seed={selectedVoiceSeed ?? selectedVoiceName}
+                name={selectedVoiceName}
+                className="shrink-0"
+              />
+              <span className="truncate">{selectedVoiceName}</span>
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center justify-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon-lg"
+            className="flex-col rounded-xl"
+            onClick={() => seekBackward(10)}
+            disabled={!isReady}
+          >
+            <Undo className="-mb-1 size-4" />
+            <span className="text-[10px] font-medium">10</span>
+          </Button>
+
+          <Button
+            variant="default"
+            size="icon-lg"
+            className="rounded-full"
+            onClick={togglePlayPause}
+          >
+            {isPlaying ? (
+              <Pause className="fill-background" />
+            ) : (
+              <Play className="fill-background" />
             )}
-          </div>
+          </Button>
 
-          {/* player controls */}
-          <div className="flex items-center justify-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon-lg"
-              className="flex-col"
-              onClick={() => seekBackward(10)}
-              disabled={!isReady}
-            >
-              <Undo className="size-4 -mb-1" />
-              <span className="text-[10px] font-medium">10</span>
-            </Button>
+          <Button
+            variant="ghost"
+            size="icon-lg"
+            className="flex-col rounded-xl"
+            onClick={() => seekForward(10)}
+            disabled={!isReady}
+          >
+            <Redo className="-mb-1 size-4" />
+            <span className="text-[10px] font-medium">10</span>
+          </Button>
+        </div>
 
-            <Button
-              variant="default"
-              size="icon-lg"
-              className="rounded-full"
-              onClick={togglePlayPause}
-            >
-              {isPlaying ? (
-                <Pause className="fill-background" />
-              ) : (
-                <Play className="fill-background" />
-              )}
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon-lg"
-              className="flex-col"
-              onClick={() => seekForward(10)}
-              disabled={!isReady}
-            >
-              <Redo className="size-4 -mb-1" />
-              <span className="text-[10px] font-medium">10</span>
-            </Button>
-          </div>
-
-          {/* Download */}
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDownload}
-              disabled={isDownloading}
-            >
-              <Download className="size-4" />
-              Download
-            </Button>
-          </div>
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            size="lg"
+            className="rounded-xl border-foreground/10 px-3.5"
+            onClick={handleDownload}
+            disabled={isDownloading}
+          >
+            <Download className="size-4" />
+            Download
+          </Button>
         </div>
       </div>
     </div>

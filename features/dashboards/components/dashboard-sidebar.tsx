@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeToggle, useIsDarkTheme } from "@/components/theme-toggle";
 import {
   Sidebar,
   SidebarContent,
@@ -15,8 +16,17 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Wordmark } from "@/components/wordmark";
 import { UsageContainer } from "@/features/billing/components/usage-container";
 import { VoiceCreateDialog } from "@/features/voices/components/voice-create-dialog";
+import {
+  clerkVariables,
+  ORGANIZATION_POPOVER_ELEMENTS,
+  PREVIEW_TEXT_ELEMENTS,
+  PROFILE_MODAL_ELEMENTS,
+  USER_POPOVER_ELEMENTS,
+} from "@/lib/clerk-appearance";
+import { EYEBROW } from "@/lib/typography";
 import { OrganizationSwitcher, useClerk, UserButton } from "@clerk/nextjs";
 import {
   AudioLines,
@@ -24,10 +34,9 @@ import {
   Home,
   LayoutGrid,
   LucideIcon,
- Volume2,
-Settings,
+  Settings,
+  Volume2,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -45,13 +54,22 @@ interface NavSectionProps {
   pathname: string;
 }
 
+/**
+ * Nav items read as a dot and a word when the sidebar is open. Collapsed to the rail
+ * there is no word left to anchor the dot, so the item's icon takes over.
+ */
+const NavMarker = ({ icon: Icon }: { icon: LucideIcon }) => (
+  <span className="flex size-4 shrink-0 items-center justify-center">
+    <span className="size-1.5 rounded-full bg-foreground/30 transition-colors group-data-active/menu-button:bg-foreground group-data-[collapsible=icon]:hidden" />
+    <Icon className="hidden group-data-[collapsible=icon]:block" />
+  </span>
+);
+
 const NavSection = ({ label, items, pathname }: NavSectionProps) => {
   return (
     <SidebarGroup>
       {label && (
-        <SidebarGroupLabel className="text-[13px] uppercase text-muted-foreground">
-          {label}
-        </SidebarGroupLabel>
+        <SidebarGroupLabel className={EYEBROW}>{label}</SidebarGroupLabel>
       )}
       <SidebarGroupContent>
         <SidebarMenu>
@@ -67,19 +85,16 @@ const NavSection = ({ label, items, pathname }: NavSectionProps) => {
                 }
                 onClick={item.onClick}
                 tooltip={item.title}
-                className="h-9 px-3 py-2 text-[13px] tracking-tight font-medium border border-transparent data-active:border-border data-active:shadow-[0px_1px_1px_0px_rgba(44,54,53,0.03),inset_0px_0px_0px_2px_white]"
+                className="h-9 rounded-lg border border-transparent px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground data-active:border-foreground/10 data-active:bg-sidebar-accent data-active:text-foreground"
               >
                 {item.url ? (
-                  <Link
-                    href={item.url}
-                    className="flex items-center justify-center gap-2"
-                  >
-                    <item.icon />
+                  <Link href={item.url} className="flex items-center gap-2.5">
+                    <NavMarker icon={item.icon} />
                     <span>{item.title}</span>
                   </Link>
                 ) : (
                   <>
-                    <item.icon />
+                    <NavMarker icon={item.icon} />
                     <span>{item.title}</span>
                   </>
                 )}
@@ -95,6 +110,9 @@ const NavSection = ({ label, items, pathname }: NavSectionProps) => {
 const DashboardSidebar = () => {
   const pathname = usePathname();
   const clerk = useClerk();
+  const dark = useIsDarkTheme();
+
+  const [voiceDialogOpen, setVoiceDialogOpen] = useState(false);
 
   const mainMenuItem: MenuItem[] = [
     { title: "Dashboard", url: "/dashboard", icon: Home },
@@ -110,6 +128,7 @@ const DashboardSidebar = () => {
       onClick: () => setVoiceDialogOpen(true),
     },
   ];
+
   const othersMenuItems: MenuItem[] = [
     {
       title: "Setting",
@@ -123,8 +142,6 @@ const DashboardSidebar = () => {
     },
   ];
 
-  const [voiceDialogOpen, setVoiceDialogOpen] = useState(false);
-
   return (
     <>
       <VoiceCreateDialog
@@ -133,47 +150,66 @@ const DashboardSidebar = () => {
       />
 
       <Sidebar collapsible="icon">
-        <SidebarHeader className="flex flex-col gap-4 pt-4">
-          <div className="flex items-center gap-2 pl-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:pl-0">
-            <Image
-              src="/logo.svg"
-              alt="Resonance"
-              width={24}
-              height={24}
-              className="rounded-sm"
-            />
-            <span className="group-data-[collapsible=icon]:hidden font-semibold text-lg tracking-tighter text-foreground">
+        <SidebarHeader className="flex flex-col gap-5 pt-4">
+          <div className="flex items-center gap-2.5 pl-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:pl-0">
+            <Wordmark height={16} />
+            <span className="font-semibold text-[15px] tracking-[-0.02em] text-foreground group-data-[collapsible=icon]:hidden">
               Resonance
             </span>
-            <SidebarTrigger className="ml-auto lg:hidden" />
+            <div className="ml-auto flex items-center gap-1 group-data-[collapsible=icon]:hidden">
+              <ThemeToggle />
+              <SidebarTrigger className="lg:hidden" />
+            </div>
           </div>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <OrganizationSwitcher
-                hidePersonal
-                fallback={
-                  <Skeleton className="h-8.5 w-full group-data-[collapsible=icon]:size8 rounded-md border  bg-white" />
-                }
-                appearance={{
-                  elements: {
-                    rootBox:
-                      "w-full! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:flex! group-data-[collapsible=icon]:justify-center!",
-                    organizationSwitcherTrigger:
-                      "w-full! justify-between! bg-white! border! border-border! rounded-md! pl-1! pr-2! py-1! gap-3! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! shadow-[0px_1px_1.5px_0px_rgba(44,54,53,0.03)]! shadow-[0px_1px_1px_0px_rgba(44,54,53,0.03)]!",
-                    organizationPreview: "gap-2!",
-                    organizationPreviewAvatarBox: "size-6! rounded-sm!",
-                    organizationPreviewTextContainer:
-                      "text-xs! tracking-tight! font-medium! text-foreground! group-data-[collapsible=icon]:hidden!",
-                    organizationPreviewMainIdentifier: "text-[13px]!",
-                    organizationSwitcherTriggerIcon:
-                      "size-4! text-sidebar-foreground! group-data-[collapsible=icon]:hidden!",
-                  },
-                }}
-              />
-            </SidebarMenuItem>
-          </SidebarMenu>
+
+          <div className="flex flex-col gap-2">
+            <span
+              className={`${EYEBROW} px-1 group-data-[collapsible=icon]:hidden`}
+            >
+              Workspace
+            </span>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <OrganizationSwitcher
+                  hidePersonal
+                  // The profile opens as its own mount, so it needs the theme handed
+                  // to it separately from the switcher's own appearance.
+                  organizationProfileProps={{
+                    appearance: {
+                      variables: clerkVariables(dark),
+                      elements: PROFILE_MODAL_ELEMENTS,
+                    },
+                  }}
+                  fallback={
+                    <Skeleton className="h-8.5 w-full group-data-[collapsible=icon]:size-8 rounded-md border bg-card" />
+                  }
+                  appearance={{
+                    variables: clerkVariables(dark),
+                    elements: {
+                      ...ORGANIZATION_POPOVER_ELEMENTS,
+                      ...PREVIEW_TEXT_ELEMENTS,
+                      rootBox:
+                        "w-full! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:flex! group-data-[collapsible=icon]:justify-center!",
+                      organizationSwitcherTrigger:
+                        "w-full! justify-between! bg-card! border! border-border! rounded-lg! pl-1! pr-2! py-1! gap-3! shadow-none! hover:bg-muted! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1!",
+                      organizationPreview: "gap-2!",
+                      organizationPreviewAvatarBox: "size-6! rounded-sm!",
+                      organizationPreviewTextContainer:
+                        "text-xs! tracking-tight! font-medium! text-foreground! group-data-[collapsible=icon]:hidden!",
+                      // Keeps the pinned colour from PREVIEW_TEXT_ELEMENTS; only
+                      // the trigger's name needs the tighter size.
+                      organizationPreviewMainIdentifier:
+                        "text-[13px]! text-foreground!",
+                      organizationSwitcherTriggerIcon:
+                        "size-4! text-muted-foreground! group-data-[collapsible=icon]:hidden!",
+                    },
+                  }}
+                />
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </div>
         </SidebarHeader>
-        <div className="border-b border-dashed border-border" />
+
         <SidebarContent>
           <NavSection items={mainMenuItem} pathname={pathname} />
           <NavSection
@@ -189,15 +225,24 @@ const DashboardSidebar = () => {
             <SidebarMenuItem>
               <UserButton
                 showName
+                userProfileProps={{
+                  appearance: {
+                    variables: clerkVariables(dark),
+                    elements: PROFILE_MODAL_ELEMENTS,
+                  },
+                }}
                 fallback={
-                  <Skeleton className="h-8.5 w-full group-data-[collapsible=icon]:size-8 rounded-md border border-border bg-white" />
+                  <Skeleton className="h-8.5 w-full group-data-[collapsible=icon]:size-8 rounded-md border border-border bg-card" />
                 }
                 appearance={{
+                  variables: clerkVariables(dark),
                   elements: {
+                    ...USER_POPOVER_ELEMENTS,
+                    ...PREVIEW_TEXT_ELEMENTS,
                     rootBox:
                       "w-full! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:flex! group-data-[collapsible=icon]:justify-center!",
                     userButtonTrigger:
-                      "w-full! justify-between! bg-white! border! border-border! rounded-md! pl-1! pr-2! py-1! shadow-[0px_1px_1.5px_0px_rgba(44,54,53,0.03)]! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! group-data-[collapsible=icon]:after:hidden! [--border:color-mix(in_srgb,transparent,var(--clerk-color-neutral,#000000)_15%)]!",
+                      "w-full! justify-between! bg-card! border! border-border! rounded-lg! pl-1! pr-2! py-1! shadow-none! hover:bg-muted! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! group-data-[collapsible=icon]:after:hidden!",
                     userButtonBox: "flex-row-reverse! gap-2!",
                     userButtonOuterIdentifier:
                       "text-[13px]! tracking-tight! font-medium! text-foreground! pl-0! group-data-[collapsible=icon]:hidden!",

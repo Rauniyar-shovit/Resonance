@@ -1,43 +1,43 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { History, Settings } from "lucide-react";
-import { SettingsPanelSettings } from "./settings-panel-settings";
 import { SettingsPanelHistory } from "./settings-panel-history";
+import { SettingsPanelSettings } from "./settings-panel-settings";
 
+/**
+ * Each tab carries its own bottom rule rather than the list drawing one, so the two
+ * segments together form the panel's top border and the active one darkens in place.
+ */
 const tabTriggerClassName =
-  "flex-1 h-full gap-2 bg-transparent rounded-none border-x-0 border-t-0 border-b-px border-b-transparent shadow-none data-[state=active]:border-b-foreground group-data-[variant=default]/tabs-list:data-[state=active]:shadow-none";
+  "h-full flex-1 rounded-none border-0 border-b border-b-border bg-transparent font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground shadow-none after:hidden hover:text-foreground data-active:border-b-foreground data-active:bg-transparent data-active:text-foreground data-active:shadow-none";
 
 export const SettingsPanel = () => {
   return (
-    <div className="hidden w-105 min-h-0 flex-col border-l lg:flex ">
+    <div className="hidden w-105 min-h-0 flex-col border-l border-border lg:flex">
       <Tabs
         defaultValue="settings"
         className="flex h-full min-h-0 flex-col gap-y-0"
       >
         <TabsList
-          className={
-            "w-full bg-transparent rounded-none border-b h-12 group-data-[orientation=horizontal]/tabs:h-12 p-0"
-          }
+          variant="line"
+          className="h-13 w-full shrink-0 gap-0 rounded-none p-0 group-data-horizontal/tabs:h-13"
         >
           <TabsTrigger value="settings" className={tabTriggerClassName}>
-            <Settings className="size-4" />
             Settings
           </TabsTrigger>
 
           <TabsTrigger value="history" className={tabTriggerClassName}>
-            <History className="size-4" />
             History
           </TabsTrigger>
         </TabsList>
 
         <TabsContent
-          value={"settings"}
+          value="settings"
           className="mt-0 flex min-h-0 flex-1 flex-col overflow-y-auto"
         >
           <SettingsPanelSettings />
         </TabsContent>
 
         <TabsContent
-          value={"history"}
+          value="history"
           className="mt-0 flex min-h-0 flex-1 flex-col overflow-y-auto"
         >
           <SettingsPanelHistory />

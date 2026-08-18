@@ -6,27 +6,14 @@ import { toast } from "sonner";
 import { useForm } from "@tanstack/react-form";
 import { useDropzone } from "react-dropzone";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  AudioLines,
-  FolderOpen,
-  X,
-  FileAudio,
-  Upload,
-  Mic,
-  Tag,
-  Play,
-  Pause,
-  Check,
-  ChevronsUpDown,
-  Globe,
-  Layers,
-  AlignLeft,
-} from "lucide-react";
+import { AudioLines, Check, ChevronsUpDown, FolderOpen } from "lucide-react";
 import locales from "locale-codes";
 
-import { cn, formatFileSize } from "@/lib/utils";
-import { useAudioPlayback } from "@/hooks/use-audio-playback";
+import { cn } from "@/lib/utils";
+import { formatDollars } from "@/lib/currency";
+import { EYEBROW } from "@/lib/typography";
 import { useTRPC } from "@/trpc/client";
+import { VOICE_GENERATION_COST } from "@/features/text-to-speech/data/constants";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,7 +44,12 @@ import {
   VOICE_CATEGORIES,
   VOICE_CATEGORY_LABELS,
 } from "@/features/voices/data/voice-categories";
+import {
+  VOICE_DESCRIPTION_MAX_LENGTH,
+  VOICE_SAMPLE_MAX_BYTES,
+} from "@/features/voices/data/constants";
 import { VoiceRecorder } from "./voice-recorder";
+import { VoiceSampleCard } from "./voice-sample-card";
 
 const LANGUAGE_OPTIONS = locales.all
   .filter((l) => l.tag && l.tag.includes("-") && l.name)
@@ -65,6 +57,14 @@ const LANGUAGE_OPTIONS = locales.all
     value: l.tag,
     label: l.location ? `${l.name} (${l.location})` : l.name,
   }));
+
+/** Every control in the sheet sits on the same 40px rounded-xl rail. */
+const CONTROL =
+  "h-10 rounded-xl border-foreground/10 bg-card text-[15px] md:text-[15px]";
+
+/** Upload/Record read as a mono rule across the sheet, not as a pill. */
+const TAB =
+  "h-full flex-1 rounded-none font-mono text-[11px] uppercase tracking-[0.14em] group-data-horizontal/tabs:after:-bottom-px";
 
 const voiceCreateFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -74,8 +74,26 @@ const voiceCreateFormSchema = z.object({
     .refine((f) => f !== null, "An audio file is required"),
   category: z.string().min(1, "A category is required"),
   language: z.string().min(1, "A language is required"),
-  description: z.string(),
+  description: z.string().max(VOICE_DESCRIPTION_MAX_LENGTH),
 });
+
+/** Mono, wide-tracked label sitting above each control. */
+const FieldLabel = ({
+  children,
+  htmlFor,
+  trailing,
+}: {
+  children: React.ReactNode;
+  htmlFor?: string;
+  trailing?: React.ReactNode;
+}) => (
+  <div className="flex items-baseline justify-between gap-3">
+    <label htmlFor={htmlFor} className={EYEBROW}>
+      {children}
+    </label>
+    {trailing}
+  </div>
+);
 
 function FileDropzone({
   file,
@@ -86,12 +104,10 @@ function FileDropzone({
   onFileChange: (file: File | null) => void;
   isInvalid?: boolean;
 }) {
-  const { isPlaying, togglePlay } = useAudioPlayback(file);
-
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({
       accept: { "audio/*": [] },
-      maxSize: 4 * 1024 * 1024,
+      maxSize: VOICE_SAMPLE_MAX_BYTES,
       multiple: false,
       onDrop: (acceptedFiles) => {
         if (acceptedFiles.length > 0) {
@@ -101,48 +117,14 @@ function FileDropzone({
     });
 
   if (file) {
-    return (
-      <div className="flex items-center gap-3 rounded-xl border p-4">
-        <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-          <FileAudio className="size-5 text-muted-foreground" />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium">{file.name}</p>
-          <p className="text-xs text-muted-foreground">
-            {formatFileSize(file.size)}
-          </p>
-        </div>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={togglePlay}
-        >
-          {isPlaying ? (
-            <Pause className="size-4" />
-          ) : (
-            <Play className="size-4" />
-          )}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => onFileChange(null)}
-        >
-          <X className="size-4" />
-        </Button>
-      </div>
-    );
+    return <VoiceSampleCard file={file} onRemove={() => onFileChange(null)} />;
   }
 
   return (
     <div
       {...getRootProps()}
       className={cn(
-        "flex cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border px-6 py-10 transition-colors",
+        "flex cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border border-foreground/10 bg-card px-6 py-10 transition-colors",
         isDragReject || isInvalid
           ? "border-destructive"
           : isDragActive
@@ -156,16 +138,20 @@ function FileDropzone({
       </div>
 
       <div className="flex flex-col items-center gap-1.5">
-        <p className="text-base font-semibold tracking-tight">
+        <p className="text-base font-semibold tracking-[-0.02em]">
           Upload your audio file
         </p>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Supports all audio formats, max size 4MB
+        <p className="text-center text-[15px] leading-[1.6] text-muted-foreground">
+          Supports all audio formats, max size 4 MB
         </p>
       </div>
 
-      <Button type="button" variant="outline" size="sm">
+      <Button
+        type="button"
+        variant="outline"
+        className="h-9 rounded-xl border-foreground/10 px-4"
+      >
         <FolderOpen className="size-3.5" />
         Upload file
       </Button>
@@ -198,16 +184,16 @@ function LanguageCombobox({
             aria-expanded={open}
             aria-invalid={isInvalid}
             className={cn(
-              "h-9 w-full justify-between font-normal",
+              CONTROL,
+              "w-full justify-between px-3.5 font-normal",
               !value && "text-muted-foreground",
             )}
           />
         }
       >
-        <div className="flex items-center gap-2 truncate">
-          <Globe className="size-4 shrink-0 text-muted-foreground" />
+        <span className="truncate">
           {value ? selectedLabel : "Select language..."}
-        </div>
+        </span>
         <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
       </PopoverTrigger>
       <PopoverContent className="w-(--anchor-width) p-0">
@@ -343,9 +329,8 @@ export function VoiceCreateForm({
     >
       <div
         className={cn(
-          scrollable
-            ? "no-scrollbar flex flex-col gap-6 overflow-y-auto px-4"
-            : "flex flex-col gap-6",
+          "flex flex-col gap-6",
+          scrollable && "no-scrollbar min-h-0 flex-1 overflow-y-auto px-4",
         )}
       >
         <form.Field name="file">
@@ -354,18 +339,24 @@ export function VoiceCreateForm({
               field.state.meta.isTouched && !field.state.meta.isValid;
 
             return (
-              <Field data-invalid={isInvalid}>
-                <Tabs defaultValue="upload">
-                  <TabsList className="h-11! w-full">
-                    <TabsTrigger value="upload">
-                      <Upload className="size-3.5" />
+              <Field data-invalid={isInvalid} className="gap-2.5">
+                <FieldLabel>Source</FieldLabel>
+
+                <Tabs defaultValue="upload" className="gap-4">
+                  {/* The prefixed variants have to match the ones baked into the
+                      primitive, or the primitive's own height and rule offset win. */}
+                  <TabsList
+                    variant="line"
+                    className="w-full gap-0 border-b border-border p-0 group-data-horizontal/tabs:h-10"
+                  >
+                    <TabsTrigger value="upload" className={TAB}>
                       Upload
                     </TabsTrigger>
-                    <TabsTrigger value="record">
-                      <Mic className="size-3.5" />
+                    <TabsTrigger value="record" className={TAB}>
                       Record
                     </TabsTrigger>
                   </TabsList>
+
                   <TabsContent value="upload">
                     <FileDropzone
                       file={field.state.value}
@@ -393,43 +384,40 @@ export function VoiceCreateForm({
               field.state.meta.isTouched && !field.state.meta.isValid;
 
             return (
-              <Field data-invalid={isInvalid}>
-                <div className="relative flex items-center">
-                  <div className="pointer-events-none absolute left-0 flex h-full w-11 items-center justify-center">
-                    <Tag className="size-4 text-muted-foreground" />
-                  </div>
-                  <Input
-                    id={field.name}
-                    placeholder="Voice Label"
-                    aria-invalid={isInvalid}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                    className="pl-10"
-                  />
-                </div>
+              <Field data-invalid={isInvalid} className="gap-2">
+                <FieldLabel htmlFor={field.name}>Voice name</FieldLabel>
+                <Input
+                  id={field.name}
+                  placeholder="Aaron"
+                  aria-invalid={isInvalid}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  className={cn(CONTROL, "px-3.5")}
+                />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
           }}
         </form.Field>
 
-        <form.Field name="category">
-          {(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
+        <div className="flex flex-wrap gap-4">
+          <form.Field name="category">
+            {(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
 
-            return (
-              <Field data-invalid={isInvalid}>
-                <div className="relative flex items-center">
-                  <div className="pointer-events-none absolute left-0 flex h-full w-11 items-center justify-center">
-                    <Layers className="size-4 text-muted-foreground" />
-                  </div>
+              return (
+                <Field
+                  data-invalid={isInvalid}
+                  className="min-w-45 flex-1 basis-50 gap-2"
+                >
+                  <FieldLabel>Category</FieldLabel>
                   <Select
                     value={field.state.value}
                     onValueChange={(value) => field.handleChange(value ?? "")}
                   >
-                    <SelectTrigger className="w-full pl-10">
+                    <SelectTrigger className={cn(CONTROL, "w-full px-3.5")}>
                       <SelectValue placeholder="Select category..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -440,29 +428,34 @@ export function VoiceCreateForm({
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        </form.Field>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+          </form.Field>
 
-        <form.Field name="language">
-          {(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field data-invalid={isInvalid}>
-                <LanguageCombobox
-                  value={field.state.value}
-                  onChange={field.handleChange}
-                  isInvalid={isInvalid}
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        </form.Field>
+          <form.Field name="language">
+            {(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+
+              return (
+                <Field
+                  data-invalid={isInvalid}
+                  className="min-w-45 flex-1 basis-50 gap-2"
+                >
+                  <FieldLabel>Language</FieldLabel>
+                  <LanguageCombobox
+                    value={field.state.value}
+                    onChange={field.handleChange}
+                    isInvalid={isInvalid}
+                  />
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+          </form.Field>
+        </div>
 
         <form.Field name="description">
           {(field) => {
@@ -470,22 +463,29 @@ export function VoiceCreateForm({
               field.state.meta.isTouched && !field.state.meta.isValid;
 
             return (
-              <Field data-invalid={isInvalid}>
-                <div className="relative flex items-center">
-                  <div className="pointer-events-none absolute left-0 flex h-full w-11 items-center justify-center">
-                    <AlignLeft className="size-4 text-muted-foreground" />
-                  </div>
-                  <Textarea
-                    id={field.name}
-                    placeholder="Describe this voice..."
-                    aria-invalid={isInvalid}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                    className="min-h-20 pl-10"
-                    rows={3}
-                  />
-                </div>
+              <Field data-invalid={isInvalid} className="gap-2">
+                <FieldLabel
+                  htmlFor={field.name}
+                  trailing={
+                    <span className="font-mono text-[11px] text-muted-foreground">
+                      {field.state.value.length} /{" "}
+                      {VOICE_DESCRIPTION_MAX_LENGTH}
+                    </span>
+                  }
+                >
+                  Description
+                </FieldLabel>
+                <Textarea
+                  id={field.name}
+                  placeholder="Soothing and calm, like a self-help audiobook narrator."
+                  aria-invalid={isInvalid}
+                  maxLength={VOICE_DESCRIPTION_MAX_LENGTH}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  className="min-h-20 rounded-xl border-foreground/10 bg-card px-3.5 py-3 text-[15px] leading-[1.6] md:text-[15px]"
+                  rows={3}
+                />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
@@ -499,8 +499,14 @@ export function VoiceCreateForm({
         >
           {({ isSubmitting }) => {
             const submitButton = (
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Creating..." : "Create Voice"}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="h-9 flex-1 rounded-xl"
+              >
+                {isSubmitting
+                  ? "Creating…"
+                  : `Create voice — ${formatDollars(VOICE_GENERATION_COST)}`}
               </Button>
             );
 

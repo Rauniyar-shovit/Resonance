@@ -54,7 +54,8 @@ const TextToSpeechDetailView = ({ generationId }: { generationId: string }) => {
     <TTSVoicesProvider value={{ customVoices, systemVoices, allVoices }}>
       <TextToSpeechForm key={generationId} defaultValues={defaultValues}>
         <div className="flex min-h-0 flex-1 overflow-hidden">
-          <div className="flex min-h-0 flex-1 flex-col">
+          {/* Writing takes 60% of the column, the player the remaining 40%. Neither scrolls. */}
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <TextInputPanel />
             <VoicePreviewPanel
               audioUrl={data.audioUrl}

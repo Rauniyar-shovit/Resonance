@@ -18,7 +18,7 @@ const createVoiceSchema = z.object({
 // Vercel Functions reject request bodies over 4.5 MB at the edge with a generic
 // 413 before this handler runs, so cap below that to surface our own message.
 const MAX_UPLOAD_SIZE_BYTES = 4 * 1024 * 1024; // 4 MB
-const MIN_AUDIO_DURATION_SECONDS = 10;
+const MIN_AUDIO_DURATION_SECONDS = 5;
 
 export async function POST(request: Request) {
   const { userId, orgId } = await auth();
@@ -122,10 +122,10 @@ export async function POST(request: Request) {
         name,
         variant: "CUSTOM",
         orgId,
-        // @ts-ignore
-        description,
+        description: description ?? "",
         category,
         language,
+        r2ObjectKey: "", // Will be updated after
       },
       select: {
         id: true,

@@ -1,21 +1,20 @@
-import { Field, FieldLabel } from "@/components/ui/field";
-import { VoiceAvatar } from "@/components/voice-avatar/voice-avatar";
-import { VOICE_CATEGORY_LABELS } from "@/features/voices/data/voice-categories";
-import { useTypedAppFormContext } from "@/hooks/use-app-form";
-import { useSelector } from "@tanstack/react-form";
-import { useTTSVoices } from "../contexts/tts-voices-context";
-import { ttsFormOptions } from "./text-to-speech-form";
-import { SelectGroupLabel } from "@base-ui/react";
 import {
   Select,
   SelectContent,
   SelectGroup,
+  SelectItem,
   SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
-  SelectItem,
-  SelectSeparator,
 } from "@/components/ui/select";
+import { VoiceAvatar } from "@/components/voice-avatar/voice-avatar";
+import { VOICE_CATEGORY_LABELS } from "@/features/voices/data/voice-categories";
+import { useTypedAppFormContext } from "@/hooks/use-app-form";
+import { EYEBROW } from "@/lib/typography";
+import { useSelector } from "@tanstack/react-form";
+import { useTTSVoices } from "../contexts/tts-voices-context";
+import { ttsFormOptions } from "./text-to-speech-form";
 
 export const VoiceSelector = () => {
   const { customVoices, systemVoices, allVoices: voices } = useTTSVoices();
@@ -38,8 +37,9 @@ export const VoiceSelector = () => {
       : voices[0];
 
   return (
-    <Field>
-      <FieldLabel>Voice style</FieldLabel>
+    <div className="flex flex-col gap-2.5">
+      <span className={EYEBROW}>Voice style</span>
+
       <Select
         value={voiceId}
         onValueChange={(v) => {
@@ -49,19 +49,25 @@ export const VoiceSelector = () => {
         }}
         disabled={isSubmitting}
       >
-        <SelectTrigger
-          className={"w-full h-auto gap-1 rounded-lg bg-white px-2 py-1"}
-        >
+        <SelectTrigger className="h-10 w-full gap-2.5 rounded-xl border-foreground/10 bg-card px-3.5 data-[size=default]:h-10">
           <SelectValue>
             {currentVoice && (
               <>
-                <VoiceAvatar seed={currentVoice.id} name={currentVoice.name} />
+                <VoiceAvatar
+                  seed={currentVoice.id}
+                  name={currentVoice.name}
+                  className="size-5"
+                />
 
                 <span className="truncate text-sm font-medium tracking-tight">
                   {currentVoice.name}
-                  {currentVoice.category &&
-                    ` - ${VOICE_CATEGORY_LABELS[currentVoice.category]}`}
                 </span>
+
+                {currentVoice.category && (
+                  <span className="ml-auto font-mono text-xs text-muted-foreground">
+                    {VOICE_CATEGORY_LABELS[currentVoice.category]}
+                  </span>
+                )}
               </>
             )}
           </SelectValue>
@@ -127,6 +133,6 @@ export const VoiceSelector = () => {
           )}
         </SelectContent>
       </Select>
-    </Field>
+    </div>
   );
 };

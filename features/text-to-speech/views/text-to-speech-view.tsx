@@ -42,7 +42,8 @@ const TextToSpeechView = ({
     <TTSVoicesProvider value={{ customVoices, systemVoices, allVoices }}>
       <TextToSpeechForm defaultValues={defaultValues}>
         <div className="flex min-h-0 flex-1 overflow-hidden">
-          <div className="flex min-h-0 flex-1 flex-col">
+          {/* Writing takes 60% of the column, the preview the remaining 40%. Neither scrolls. */}
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <TextInputPanel />
             <VoicePreviewPlaceholder />
           </div>
