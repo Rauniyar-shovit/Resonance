@@ -51,7 +51,7 @@ export function VoicesToolbar({
         </h2>
 
         <p className="max-w-[48ch] text-pretty text-base leading-[1.6] text-muted-foreground">
-          Ten seconds of clean audio is enough to clone one. Files up to 4 MB.{" "}
+          Five seconds of clean audio is enough to clone one. Files up to 4 MB.{" "}
           {formatDollars(VOICE_GENERATION_COST)} per voice generated, then reuse
           is free.
         </p>
@@ -68,7 +68,7 @@ export function VoicesToolbar({
             />
           </InputGroupAddon>
           <InputGroupInput
-            placeholder="Search voices by name or description"
+            placeholder="Search voices, categories, or regions"
             value={localQuery}
             onChange={(e) => {
               setLocalQuery(e.target.value);

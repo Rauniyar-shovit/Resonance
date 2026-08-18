@@ -82,7 +82,7 @@ export const LandingView = () => {
             A voice your whole team can use.
           </h1>
           <p className="mt-[clamp(24px,3vw,36px)] max-w-[56ch] text-[clamp(1.0625rem,1.5vw,1.3125rem)] leading-[1.55] text-muted-foreground">
-            Clone a voice from ten seconds of audio. Generate up to 5,000
+            Clone a voice from five seconds of audio. Generate up to 5,000
             characters at a time. Every voice and every generation lives in your
             organization&rsquo;s workspace — not locked to one account.
           </p>
@@ -272,7 +272,7 @@ export const LandingView = () => {
             className={`${SHELL} flex flex-col items-center py-[clamp(80px,10vw,160px)] text-center`}
           >
             <h2 className="max-w-[18ch] text-[clamp(2.25rem,5.5vw,4.25rem)] font-semibold leading-none tracking-[-0.045em]">
-              Ten seconds of audio is all it takes to start.
+              Five seconds of audio is all it takes to start.
             </h2>
             <div className="mt-[clamp(32px,4vw,44px)] flex flex-wrap justify-center gap-3">
               <Link

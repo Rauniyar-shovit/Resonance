@@ -69,7 +69,7 @@ export const STEPS: Step[] = [
   {
     index: "01",
     title: "Upload a sample",
-    body: "Ten seconds of clean audio is enough. Files up to 4 MB. The voice is created once and becomes available to everyone in the workspace.",
+    body: "Five seconds of clean audio is enough. Files up to 4 MB. The voice is created once and becomes available to everyone in the workspace.",
   },
   {
     index: "02",
@@ -201,7 +201,7 @@ export const FAQS: Faq[] = [
   {
     question: "How much audio do I need to clone a voice?",
     answer:
-      "Ten seconds or more, in a file up to 4 MB. Cleaner input gives a cleaner voice, but you don't need a studio session.",
+      "Five seconds or more, in a file up to 4 MB. Cleaner input gives a cleaner voice, but you don't need a studio session.",
   },
   {
     question: "Who can use a voice once it exists?",
