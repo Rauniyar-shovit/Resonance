@@ -1,95 +1,75 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Coins } from "lucide-react";
-import { COST_PER_UNIT, TEXT_MAX_LENGTH } from "../data/constants";
+import { formatDollars } from "@/lib/currency";
 import { useTypedAppFormContext } from "@/hooks/use-app-form";
-import { ttsFormOptions } from "./text-to-speech-form";
-import { GenerateButton } from "./generate-button";
 import { useSelector } from "@tanstack/react-form";
-import { SettingsDrawer } from "./settings-drawer";
+import { COST_PER_UNIT, TEXT_MAX_LENGTH } from "../data/constants";
+import { GenerateButton } from "./generate-button";
 import { HistoryDrawer } from "./history-drawer";
-import { VoiceSelectorButton } from "./voice-selector-button";
 import { PromptSuggestion } from "./prompt-suggestion";
+import { SettingsDrawer } from "./settings-drawer";
+import { ttsFormOptions } from "./text-to-speech-form";
+import { VoiceSelectorButton } from "./voice-selector-button";
 
 export const TextInputPanel = () => {
   const form = useTypedAppFormContext(ttsFormOptions);
   const text = useSelector(form.store, (s) => s.values.text);
-
   const isSubmitting = useSelector(form.store, (s) => s.isSubmitting);
-  const isValid = useSelector(form.store, (s) => s.isValid);
+
+  const isEmpty = text.trim().length === 0;
+
   return (
-    <div className="flex h-full min-h-0 flex-col flex-1">
-      {/*Text input area  */}
-      <div className="relative min-h-0 flex-1">
+    <div className="flex min-h-0 flex-col max-lg:flex-1 lg:grow-0 lg:shrink-0 lg:basis-1/2">
+      {/* The panel itself never scrolls; the textarea takes what is left and scrolls inside. */}
+      <div className="flex min-h-0 flex-1 flex-col gap-6 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,36px)]">
         <form.Field name="text">
           {(field) => (
-            <Textarea
+            <textarea
               value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-              placeholder="Start typing or paste your text here..."
-              className="absolute inset-0 resize-none border-0 bg-transparent p-4 pb-6 lg:p-6 lg:pb-8 text-base! leading-relaxed tracking-tight shadow-none wrap-break-word focus-visible:ring-0"
+              onChange={(event) => field.handleChange(event.target.value)}
+              placeholder="Start typing or paste your text here."
               maxLength={TEXT_MAX_LENGTH}
               disabled={isSubmitting}
+              className="min-h-0 w-full flex-1 resize-none overflow-y-auto bg-transparent text-[17px] leading-[1.6] outline-none placeholder:text-muted-foreground disabled:opacity-50"
             />
           )}
         </form.Field>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-linear-to-t from background to-transparent" />
+        <PromptSuggestion
+          disabled={isSubmitting}
+          onSelect={(prompt) => form.setFieldValue("text", prompt)}
+        />
       </div>
-      <div className="shrink-0 p-4 lg:p-6">
-        {/* mobile layout */}
-        <div className="flex flex-col gap-3 lg:hidden">
-          <div className="flex items-center gap-2">
+
+      {/* The meter and the action sit together on the muted rail, below the writing surface. */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-6 gap-y-3.5 border-t border-border bg-muted px-[clamp(16px,3vw,32px)] py-3.5">
+        <div className="flex items-center gap-5 font-mono text-xs text-muted-foreground">
+          <span>
+            {text.length.toLocaleString()} / {TEXT_MAX_LENGTH.toLocaleString()}{" "}
+            characters
+          </span>
+          <span className="text-foreground">
+            {formatDollars(text.length * COST_PER_UNIT)} estimated
+          </span>
+        </div>
+
+        <div className="flex w-full flex-col gap-2.5 lg:w-auto lg:flex-row lg:items-center">
+          {/* Settings and history are a docked panel on desktop, drawers below it. */}
+          <div className="flex items-center gap-2 lg:hidden">
             <SettingsDrawer>
               <VoiceSelectorButton />
             </SettingsDrawer>
             <HistoryDrawer />
           </div>
+
           <GenerateButton
-            className="w-full"
-            disabled={isSubmitting}
+            size="lg"
+            className="w-full px-4.5 lg:w-auto"
+            disabled={isSubmitting || isEmpty}
             isSubmitting={isSubmitting}
             onSubmit={() => form.handleSubmit()}
           />
         </div>
-        {/* Desktop layout */}
-        {text.length > 0 ? (
-          <div className=" flex items-center justify-between">
-            <Badge variant="outline" className="gap-1.5 border-dashed">
-              <Coins className="size-3 text-chart-5" />
-              <span className="text-xs">
-                <span className="tabular-nums">
-                  {" "}
-                  ${(text.length * COST_PER_UNIT).toFixed(4)} estimated
-                </span>
-              </span>
-            </Badge>
-            <div className="flex items-center gap-3">
-              <p className="text-xs tracking-tight">
-                {text.length.toLocaleString()}
-                <span className="text-muted-foreground">
-                  {" "}
-                  / {TEXT_MAX_LENGTH.toLocaleString()} characters
-                </span>
-              </p>
-              <GenerateButton
-                size="sm"
-                disabled={isSubmitting || !isValid}
-                isSubmitting={isSubmitting}
-                onSubmit={() => form.handleSubmit()}
-                className="hidden lg:block"
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="hidden lg:block">
-            <PromptSuggestion
-              onSelect={(prompt) => form.setFieldValue("text", prompt)}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

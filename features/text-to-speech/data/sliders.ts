@@ -9,6 +9,15 @@ interface Slider {
   defaultValue: number;
 }
 
+/**
+ * Reads the precision off the slider's own step, so `topK` shows 1,000 rather than
+ * 1000.00 and `temperature` keeps the decimal it is actually adjusted by.
+ */
+export const formatSliderValue = (slider: Slider, value: number): string =>
+  slider.step < 1
+    ? value.toFixed(2)
+    : Math.round(value).toLocaleString();
+
 export const sliders: Slider[] = [
   {
     id: "temperature",

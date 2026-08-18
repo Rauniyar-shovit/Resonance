@@ -9,6 +9,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import { EYEBROW } from "@/lib/typography";
 
 interface SettingsDrawerProps {
   open?: boolean;
@@ -24,14 +25,16 @@ export const SettingsDrawer = ({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       {children ?? (
-        <DrawerTrigger render={<Button variant="outline" size="sm" />}>
-          {/* <DrawerTrigger render={<Button variant="outline" size="sm" />}> */}
+        <DrawerTrigger
+          render={<Button variant="outline" size="icon-lg" />}
+          className="rounded-xl border-foreground/10 bg-card"
+        >
           <Settings className="size-4" />
         </DrawerTrigger>
       )}
 
       <DrawerContent>
-        <DrawerHeader>Settings</DrawerHeader>
+        <DrawerHeader className={EYEBROW}>Settings</DrawerHeader>
         <div className="overflow-y-auto">
           <SettingsPanelSettings />
         </div>

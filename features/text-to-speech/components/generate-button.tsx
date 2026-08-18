@@ -8,7 +8,7 @@ export const GenerateButton = ({
   onSubmit,
   className,
 }: {
-  size?: "default" | "sm";
+  size?: "default" | "sm" | "lg";
   disabled: boolean;
   isSubmitting: boolean;
   onSubmit: () => void;

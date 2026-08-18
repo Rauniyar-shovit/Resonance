@@ -89,13 +89,13 @@ export const VoicePreviewMobile = ({
   };
 
   return (
-    <div className="border-t lg:hidden gap-4 p-4">
+    <div className="border-t border-border p-4 lg:hidden">
       <audio ref={audioRef} src={audioUrl} />
       <div className="grid grid-cols-[1fr_auto] items-center gap-4">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium ">{text}</p>
           {selectedVoiceName && (
-            <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="mt-1 flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
               <VoiceAvatar
                 seed={selectedVoiceSeed ?? selectedVoiceName}
                 name={selectedVoiceName}

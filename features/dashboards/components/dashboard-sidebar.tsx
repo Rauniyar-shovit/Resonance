@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Wordmark } from "@/components/wordmark";
 import { UsageContainer } from "@/features/billing/components/usage-container";
 import { VoiceCreateDialog } from "@/features/voices/components/voice-create-dialog";
+import { EYEBROW } from "@/lib/typography";
 import { OrganizationSwitcher, useClerk, UserButton } from "@clerk/nextjs";
 import {
   AudioLines,
@@ -32,10 +33,6 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-
-/** Mono, wide-tracked, uppercase — the label voice used across the workspace. */
-const EYEBROW =
-  "font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground";
 
 interface MenuItem {
   title: string;

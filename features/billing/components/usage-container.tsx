@@ -7,10 +7,8 @@ import { Waveform } from "@/components/waveform";
 import { useCheckout } from "@/features/billing/hooks/use-checkout";
 import { COST_PER_UNIT } from "@/features/text-to-speech/data/constants";
 import { formatCents, formatDollars } from "@/lib/currency";
+import { EYEBROW } from "@/lib/typography";
 import { useTRPC } from "@/trpc/client";
-
-const EYEBROW =
-  "font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground";
 
 /** Quoted from the same constant the estimate uses, so the two can't disagree. */
 const SPEECH_RATE = formatDollars(COST_PER_UNIT * 1000);

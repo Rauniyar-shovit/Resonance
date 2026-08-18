@@ -1,10 +1,10 @@
 "use client";
 
-import { VoiceAvatar } from "@/components/voice-avatar/voice-avatar";
+import { Waveform } from "@/components/waveform";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { formatDistanceToNow } from "date-fns";
-import { AudioLines, AudioWaveform, Clock } from "lucide-react";
+import { formatDistanceToNowStrict } from "date-fns";
+import { Play } from "lucide-react";
 import Link from "next/link";
 
 export const SettingsPanelHistory = () => {
@@ -16,57 +16,48 @@ export const SettingsPanelHistory = () => {
 
   if (!generations.length) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-2 p-8">
-        <div className="relative flex w-25 items-center justify-center">
-          <div className="absolute left-0 -rotate-30 rounded-full bg-muted p-3">
-            <AudioLines className="size-4 text-muted-foreground" />
-          </div>
-
-          <div className="relative z-10 rounded-full bg-foreground p-3">
-            <AudioWaveform className="size-4 text-background" />
-          </div>
-
-          <div className="absolute right-0 rotate-30 rounded-full bg-muted p-3">
-            <Clock className="size-4 text-muted-foreground" />
-          </div>
-        </div>
-        <p className="font-semibold tracking-tight text-foreground">
-          No generations yet
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 p-[clamp(16px,2.4vw,28px)] py-16 text-center">
+        <Waveform
+          count={24}
+          seed={1.27}
+          className="h-8"
+          barClassName="bg-foreground/15"
+        />
+        <p className="text-lg font-semibold tracking-[-0.03em]">
+          No generations yet.
         </p>
-        <p className="max-w-48 text-center text-xs text-muted-foreground">
-          Generate some audio and it will appear here
+        <p className="max-w-[36ch] text-pretty text-[15px] leading-[1.6] text-muted-foreground">
+          Generate some speech and every take lands here, ready to play again.
         </p>
       </div>
     );
   }
+
   return (
-    <div className="flex flex-col gap-1 p-2">
+    <div className="flex flex-col px-[clamp(16px,2.4vw,28px)]">
       {generations.map((generation) => (
         <Link
           href={`/dashboard/text-to-speech/${generation.id}`}
           key={generation.id}
-          className="flex items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-muted"
+          className="group flex items-center gap-3.5 border-b border-border py-4 text-left"
         >
-          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <p className="truncate text-sm font-medium text-foreground">
-              {generation.text}
-            </p>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <VoiceAvatar
-                seed={generation.voiceId ?? generation.voiceName}
-                name={generation.voiceName}
-                className="shrink-0"
-              />
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-foreground/10 transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+            <Play className="size-3.5 fill-current" />
+          </span>
 
-              <span>{generation.voiceName}</span>
-              <span>&middot;</span>
-              <span>
-                {formatDistanceToNow(new Date(generation.createdAt), {
-                  addSuffix: true,
-                })}
-              </span>
-            </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <span className="truncate text-sm font-medium">
+              {generation.text}
+            </span>
+            <span className="truncate font-mono text-[11px] text-muted-foreground">
+              {generation.voiceName} · {generation.text.length.toLocaleString()}{" "}
+              chars
+            </span>
           </div>
+
+          <span className="shrink-0 font-mono text-xs text-muted-foreground">
+            {formatDistanceToNowStrict(new Date(generation.createdAt))}
+          </span>
         </Link>
       ))}
     </div>
